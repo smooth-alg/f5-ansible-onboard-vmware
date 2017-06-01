@@ -50,17 +50,19 @@ This solution demonstrates automating onboarding BIG-IPs (physical or virtual) u
   	* Onboard BIG-IPs
 	```
 	ansible-playbook playbooks/onboard_bigip_standalone_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}'
-  OPTIONAL: TO CLUSTER THE TWO AFTER ABOVE: 
-	ansible-playbook playbooks/onboard_bigip_cluster_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}'
-	```
+  OPTIONAL - TO CLUSTER THE TWO AFTER ABOVE
+	 ansible-playbook playbooks/onboard_bigip_cluster_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}'
+	
+  ```
 
   	* Resets BIG-IPs configs to factory default, removes licenses, etc.
 	
 	```
 	ansible-playbook playbooks/reset_bigip_standalone_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}' 
 	OR
-  ansible-playbook playbooks/reset_bigip_cluster_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}'
-	```
+    ansible-playbook playbooks/reset_bigip_cluster_vmware.yaml  -i inventory/hosts --extra-vars '{"env_tag":"example_onboard"}'
+	
+  ```
 
     Output variables will be placed in cache/<env_tag>
 
