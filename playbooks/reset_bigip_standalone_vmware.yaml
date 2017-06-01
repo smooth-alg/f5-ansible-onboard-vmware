@@ -1,0 +1,9 @@
+
+############## BEGIN COLLECTING/SETTING VARIABLES ######
+
+- hosts: bigips
+  gather_facts: False
+  tasks:
+    - name: reset bigip configs 
+      raw: "tmsh load /sys config default; tmsh delete sys management-route all; tmsh save /sys config; rm -f /config/bigip.license; reloadlic"
+

@@ -1,0 +1,21 @@
+---
+
+iApp_service_name: "www_demo_f5example_com"
+vip_id: "{{ iApp_service_name }}"
+vip_address: "10.1.1.1"
+
+# iApp_template_name: "f5.http"
+iApp_template_type: "https_vip_reference"
+iApp_template_name: "f5.http.v1.2.0rc4"
+jinja_template_name: "{{ iApp_template_type + '_' + iApp_template_name + '.j2' }}"
+
+
+# If Advanced
+iApp_advanced: "False"
+deployment_type: "lb_and_waf"
+deploy_analytics: "true"
+
+ltm_policy_name: "ltm_policy_w_asm_policy"
+logging_profile_name: "asm_log_to_splunk"
+analytics_profile_name: "my_analytics_profile"
+

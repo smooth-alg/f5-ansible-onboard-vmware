@@ -1,0 +1,99 @@
+---
+# ------------------------------------------------------------------------
+# Configure some global traffic profiles that can be shared by all tenants 
+# ------------------------------------------------------------------------
+
+
+- name: Configuring FastL4 profiles ... fastL4-route-friendly
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{
+              "name":"fastL4-route-friendly",
+              "resetOnTimeout":"disabled",
+              "looseInitialization":"enabled",
+              "looseClose":"enabled"
+            }'
+    collection_path='mgmt/tm/ltm/profile/fastl4'
+    resource_key="name"
+
+# #Create optmized SSL profiles with nagle and delayed-ack disabled
+# #Bug 325280 - RFE: Implement auto-nagle / auto-delayed-ack for tcp profile. (Formerly CR 131876)
+
+- name: Configuring TCP profiles ... ssl-wan-optimized
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{
+              "name":"tcp-ssl-wan-optimized",
+              "defaultsFrom":"/Common/tcp-wan-optimized",
+              "nagle":"disabled",
+              "delayedAcks":"disabled",
+              "ackOnPush":"disabled"
+            }'
+    collection_path='mgmt/tm/ltm/profile/tcp'
+    resource_key="name"
+
+- name: Configuring TCP profiles ... ssl-lan-optimized
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{
+              "name":"tcp-ssl-lan-optimized",
+              "defaultsFrom":"/Common/tcp-lan-optimized",
+              "nagle":"disabled",
+              "delayedAcks":"disabled",
+              "ackOnPush":"disabled"
+            }'
+    collection_path='mgmt/tm/ltm/profile/tcp'
+    resource_key="name"
+
+- name: Uploading SSL Certificates
+  delegate_to: localhost
+  bigip_ssl_certificate:
+      state: "present"
+      name: "{{ client_ssl_cert_name }}"
+      cert_content: "{{ lookup('file', 'ssl/website.crt') }}"
+      key_content: "{{ lookup('file', 'ssl/website.key') }}"
+
+# - name: Creating SSL profiles
+#   delegate_to: localhost
+- name: Creating SSL Profiles
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{
+              "name":"www_demo_f5example_com_clientssl",
+              "defaultsFrom":"/Common/clientssl",
+              "cert":"www_demo_f5example_com.crt",
+              "key":"www_demo_f5example_com.key"
+            }'
+    collection_path='mgmt/tm/ltm/profile/client-ssl'
+    resource_key="name"
+
+- name: Uploading iApp Templates
+  delegate_to: localhost
+  bigip_iapp_template:
+      server: "{{ ansible_ssh_host }}"
+      user: "{{ bigip_user }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      content: "{{ lookup('file', item) }}"
+  register: result
+  with_items: "{{ template_list }}"

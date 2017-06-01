@@ -1,0 +1,32 @@
+---
+- name: Create pool 1
+  delegate_to: localhost
+  bigip_pool:
+      name: "{{ pool_1_name }}"
+      lb_method: "{{ lb_method }}"
+      slow_ramp_time: "{{ slow_ramp_time }}"
+      monitors: "{{ monitors }}"
+
+- name: Create pool 2
+  delegate_to: localhost
+  bigip_pool:
+      name: "{{ pool_2_name }}"
+      lb_method: "{{ lb_method }}"
+      slow_ramp_time: "{{ slow_ramp_time }}"
+      monitors: "{{ monitors }}"
+
+- name: Add members to pool 1
+  delegate_to: localhost
+  bigip_pool_member:
+      pool: "{{ pool_1_name }}"
+      host: "{{ item.host }}"
+      port: "{{ item.port }}"
+  with_items: "{{ pool_members }}"
+
+- name: Add members to pool 2
+  delegate_to: localhost
+  bigip_pool_member:
+      pool: "{{ pool_2_name }}"
+      host: "{{ item.host }}"
+      port: "{{ item.port }}"
+  with_items: "{{ pool_members }}"

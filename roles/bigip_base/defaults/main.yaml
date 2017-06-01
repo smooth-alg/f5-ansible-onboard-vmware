@@ -1,0 +1,8 @@
+---
+
+client_ssl_cert_name: "www_demo_f5example_com"
+
+template_list:
+    - iapp_templates/appsvcs_integration_v2.1_001.tmpl
+    - iapp_templates/f5.http.v1.2.0.tmpl
+    - iapp_templates/f5.analytics.tmpl

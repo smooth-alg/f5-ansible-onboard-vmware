@@ -1,0 +1,25 @@
+---
+
+# - name: Upload base image
+#   bigip_software:
+#       state: "present"
+#       software: "{{ iso_base }}"
+#   register: result
+
+
+# - name: Install (upload, install) base image
+#   bigip_software:
+#       state: "installed"
+#       software: "{{ iso_base }}"
+#       volume: "{{ volume_new }}"
+#   register: result
+
+
+- name: Activate (upload, install, reboot) base image
+  delegate_to: localhost
+  bigip_software:
+      state: "activated"
+      software: "{{ iso_base }}"
+      volume: "{{ volume_new }}"
+  register: result
+

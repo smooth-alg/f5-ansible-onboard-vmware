@@ -1,0 +1,27 @@
+---
+
+- hosts: localhost
+  gather_facts: False
+  connection: local
+  tasks:
+      # Deploy a guest from a template
+      - name: Deploy VMware Guests From Template
+        vsphere_guest:
+          validate_certs: false
+          vcenter_hostname: vsphere.example.com
+          username: "{{ vsphere_user }}"
+          password: "{{ vsphere_password }}"
+          guest: "{{ item }}"
+          from_template: yes
+          template_src: "{{ vsphere_app_template_name }}"
+          cluster: "{{ vsphere_cluster }}"
+          esxi:
+            datacenter: "{{ vsphere_datacenter }}"
+            hostname: "{{ vsphere_esxi_host }}"
+          # vm_extra_config:
+          #   folder: "{{ vsphere_folder }}"
+          # resource_pool: "resource_pool_1"
+        with_items:
+          - www-01
+          - www-02
+          - www-03

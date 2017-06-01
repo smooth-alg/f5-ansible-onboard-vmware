@@ -1,0 +1,44 @@
+---
+
+# Node Defaults
+# partition: "Common"
+# node_host_ip: "10.10.10.10"
+# node_host_dns: "www.demo.f5example.com"
+# node_name: "www.demo.f5example.com"
+# node_description: "www.demo.f5example.com node"
+# availability_requirement: "at_least"
+# node_monitors:
+#     - "icmp"
+#     - "gateway_icmp"
+# node_quorum: 1
+# monitor_type: "and_list"
+
+node_host_ip: "10.10.10.10"
+node_host_dns: "foo.bar.com"
+node_name: "foo.example"
+node_description: "foo node"
+availability_requirement: "at_least"
+node_monitors:
+    - "icmp"
+    - "gateway_icmp"
+node_monitors_changed:
+    - "icmp"
+    - "gateway_icmp"
+    - "http"
+node_quorum: 1
+
+
+monitor_type: "and_list"
+
+
+# Pool Defaults
+pool_name: "www_demo_f5example_com_pool"
+pool_port: "80"
+pool_port_ssl: "443"
+lb_method: "ratio_member"
+slow_ramp_time: "120"
+monitors: [ "/Common/http" ]
+pool_members: 
+    - host: "www.demo.f5example.com"
+      port: "80"
+

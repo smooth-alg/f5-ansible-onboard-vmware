@@ -1,0 +1,14 @@
+---
+
+- name: Create a VIP
+  delegate_to: localhost
+  bigip_virtual_server:
+      state: "present"
+      description: "{{ vs_description }}"
+      destination: "{{ vip_address }}"
+      name: "{{ vs_name }}"
+      pool: "{{ pool_name }}"
+      port: "{{ vs_port1 }}"
+      snat: "{{ vs_snat1 }}"
+      all_profiles: "{{ vs_profiles1 }}"
+

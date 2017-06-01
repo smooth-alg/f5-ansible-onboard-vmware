@@ -1,0 +1,24 @@
+---
+# Upgrade BIG-IP
+# WARNING - Be careful with hosts/group you run this on :-)
+
+# - hosts: bigips
+- hosts: bigip-01-vmware
+  connection: local
+  gather_facts: False
+  environment:
+      F5_SERVER: "{{ ansible_ssh_host }}"
+      F5_USER: "{{ bigip_user }}"
+      # F5_PASSWORD: "{{ bigip_password }}"
+      F5_PASSWORD: "admin"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+  pre_tasks:
+
+    - name: create cache directory for each deployment
+      file: path=../cache/{{env_tag}} state=directory
+
+    - name: debug hosts after set fact
+      debug: var=hostvars[inventory_hostname]
+  roles:
+    - bigip_upgrade

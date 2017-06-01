@@ -1,0 +1,44 @@
+---
+# Onboard standalone BIG-IP in ESX ( Requirement is MGMT IP available via SSH )
+
+# Connection = default ssh 
+# - hosts: bigip-02-vmware
+- hosts: bigips
+  gather_facts: False
+  roles:
+    # configures users
+    - bigip_user
+
+
+# Connection = local as rest calls from the automation host
+# - hosts: on-prem-bigips
+- hosts: bigips
+  connection: local
+  gather_facts: False
+  environment:
+      F5_SERVER: "{{ ansible_ssh_host }}"
+      F5_USER: "{{ bigip_user }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+  roles:
+    # configures system globals like ntp, dns, snmp, syslog, db keys
+    - bigip_system
+    # sets vlans, self-ips, routes
+    - bigip_network
+    # Save Config Here before licensing & provisioning
+    # licenses bigip
+    - bigip_license
+    # provisions modules like asm, afm, etc.
+    # - bigip_provision
+    # deploy base profiles/policies/iApp templates
+    - bigip_base
+    # # deploy ASM policies if not bundled in iAppServices 
+    # # - bigip_base_asm
+  post_tasks:
+    - name: Save the running BIG-IP configuration to disk
+      delegate_to: localhost
+      bigip_config:
+        save: True
+      register: result
+

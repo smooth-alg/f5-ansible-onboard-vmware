@@ -1,0 +1,55 @@
+---
+ansible_python_interpreter: /usr/bin/env python
+ansible_connection: local
+
+# SERVICE VARS
+service: "www.demo.f5example.com"
+service_name: "www_demo_f5example_com"
+
+vip_address: 10.1.1.1
+vs_name: "{{ service_name }}_vs"
+vs_description: "{{ service_name }} virtual service"
+vs_port1: 443
+vs_profiles1:
+    - "http"
+    - "{{ service_name }}_clientssl"
+
+## SSL CERT 
+client_ssl_cert_name: "{{ service_name }}"
+
+# Static Pool Vars
+pool_name: "{{ service_name }}_pool"
+pool_port: "80"
+pool_port_ssl: "443"
+lb_method: "ratio_member"
+slow_ramp_time: "120"
+monitors: [ "/Common/http" ]
+pool_members: 
+    - host: "10.3.0.201"
+      port: "80"
+    - host: "10.3.0.202"
+      port: "80"
+    - host: "10.3.0.203"
+      port: "80"
+
+# DNS Pool Vars
+pool_dns: "www.f5.com"
+
+
+# iAPP VARS
+iApp_service_name: "{{ service_name }}"
+# TEMPLATE NAME:
+# iApp_template_name: "f5.http"
+# Use for bigip_iApp_advanced
+# iApp_template_name: "f5.http.v1.2.0rc4"
+iApp_template_name: "appsvcs_integration_v2.1_001"
+# TEMPLATE TYPE
+iApp_template_type: "https_vip"
+# iApp_template_type: "https_vip_create_new"
+# iApp_template_type: "https_w_waf"
+# iApp_template_type: "https_vip_w_waf_fqdn_pool"
+# iApp_template_type: "wildcard_https_vip"
+# iApp_template_type: "wildcard_https_vip_w_waf_fqdn_pool"
+
+www_user_data: "{{ lookup('file', install_path + '/inventory/group_vars/apps/files/user_data') }}"
+

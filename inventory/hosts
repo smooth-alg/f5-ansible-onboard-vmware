@@ -1,0 +1,36 @@
+---
+
+localhost ansible_python_interpreter=/home/vagrant/ansible-venv/bin/python
+
+[analyticshosts]
+analytics.example.com
+
+# VMWARE APPS
+[apps-vmware]
+www-01
+www-02
+www-03
+
+[apps:children]
+apps-vmware
+
+
+# BIG-IP HOSTS
+[bigips-vmware]
+bigip-01-vmware
+bigip-02-vmware
+
+[cluster-vmware]
+bigip-01-vmware
+bigip-02-vmware
+
+[bigip-clusters]
+cluster-vmware
+
+[bigip-cluster-seeds]
+bigip-01-vmware
+
+[bigips:children]
+bigips-vmware
+
+

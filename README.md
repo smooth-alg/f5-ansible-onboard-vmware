@@ -1,9 +1,7 @@
-# f5_lifecycle
-## Example of onboarding BIG-IPs in various enviroments as well as various lifecycle tasks
+# f5_onboard_vmware
+## Example of onboarding BIG-IPs in VMWare env via Ansible
 
-This solution demonstrates automating BIG-IPs (physical or virtual). 
-
-It leverages Ansible and contains playbooks to:
+This solution demonstrates automating onboarding BIG-IPs (physical or virtual) using as many modules as possible from https://github.com/f5networks/f5-ansible.
 
 
 ###  *Requirements* 
@@ -16,8 +14,8 @@ It leverages Ansible and contains playbooks to:
   * ansible
   * see "requirements.txt" for potential additional modules
 
-#### ON PREM F5 BIG-IPs:
-* Two F5 BIG-IPs running Local Traffic Manager (LTM)
+####  F5 BIG-IPs:
+* Two F5 BIG-IPs running Local Traffic Manager (LTM). Ideally Best Licenses for advanced deployments.
 * Software version == BIG-IP v12.0.0+
   * Versions Tested so far: 
   	* BIG-IP v12.0.0 Build 0.0.606
@@ -47,7 +45,7 @@ It leverages Ansible and contains playbooks to:
 	* edit variables in inventory files
 
 
-3. Run playbooks from within bigip-aws-vpn directory. Set the env_tag for name of your deployment.
+3. Run playbooks from the top directory. Set the env_tag for name of your deployment.
 
   	* Onboard BIG-IPs
 	```

@@ -1,0 +1,48 @@
+---
+
+install_path: "{{ vault_install_path }}"
+on_prem_network: "208.85.208.0/24"
+
+service: "www.demo.f5example.com"
+service_name: "www_demo_f5example_com"
+
+analytics_addr: "analytics.demo.f5example.com"
+analytics_key: "{{ vault_analytics_key }}" 
+#NOTE:
+# Pre v11.6, CLI uses root
+# v11.6 and later, AWS AMIs use admin
+
+# Warning: when configuring passwords via bigip_base
+# which uses tmsh commands from within bash
+# you can't have a "#" in the password as tmsh will think it's a comment or something
+ansible_ssh_user: "{{ vault_ansible_ssh_user }}" 
+ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}" 
+
+bigip_user: "{{ vault_bigip_user }}" 
+bigip_password: "{{ vault_bigip_password }}" 
+
+bigip_rest_user: "{{ vault_bigip_rest_user }}" 
+bigip_rest_password: "{{ vault_bigip_rest_password }}" 
+
+
+# Vsphere Creds:
+vsphere_user: "{{ vault_vsphere_user }}" 
+vsphere_password: "{{ vault_vsphere_password }}" 
+vsphere_datacenter: "{{ vault_vsphere_datacenter }}" 
+vsphere_cluster: "{{ vault_vsphere_cluster }}" 
+vsphere_esxi_host: "{{ vault_vsphere_esxi_host }}" 
+vsphere_folder: "{{ vault_vsphere_folder }}" 
+vsphere_datastore: "{{ vault_vsphere_datastore }}" 
+vsphere_app_iso_path: "{{ vault_vsphere_app_iso_path }}" 
+vsphere_app_template_name: "{{ vault_vsphere_app_template_name }}"
+vsphere_bigip_template_name: "{{ vault_vsphere_bigip_template_name }}"
+
+vsphere_mgmt_network: "{{ vault_vsphere_mgmt_network }}"
+vsphere_private_network: "{{ vault_vsphere_private_network }}"
+vsphere_public_network: "{{ vault_vsphere_public_network }}"
+vsphere_ha_network: "{{ vault_vsphere_ha_network }}"
+
+# ISO Paths for bigip_upgrade role
+bigip_iso_dir: "{{ vault_bigip_iso_dir }}"
+
+# Openstack Creds

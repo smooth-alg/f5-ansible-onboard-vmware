@@ -1,0 +1,73 @@
+---
+## Some initial setup for big ip once we can login.  We need a user for rest calls.  We may also want the default shell
+## to be bash, rather than tmsh.  The latter is difficult to use ansible...
+
+# We specifically us the bigip_facts library because it does some checking
+#   to seeif bigip is available.  Rather than 
+
+# SSH user is root for vmware, admin for others
+
+# - name: debug inventory_host
+#   debug: var=hostvars[inventory_hostname]
+#   tags:
+#       - debug
+
+
+- name: Updating the admin password via SSH. Use TMSH if ssh user = root
+  raw: tmsh modify auth user admin password '{{ bigip_password }}' 
+  ignore_errors: True
+  when: env_type == "vmware"
+
+- name: Saving tmsh config
+  raw: tmsh save sys config 
+  when: env_type == "vmware"
+
+# - name: Change ansible_ssh_user to admin if not vmware
+#   set_fact: 
+#         ansible_ssh_user="admin"
+#   when: env_type != "vmware"
+
+- name: Updating the admin password if ssh user = admin
+  raw: modify auth user admin password '{{ bigip_password }}' 
+  ignore_errors: True
+  when: env_type != "vmware"
+
+- name: Saving tmsh config if ssh user = admin
+  raw: save sys config 
+  when: env_type != "vmware"
+
+
+# Modify Default Admin Password if not already set via tmsh
+- name: Modify Admin Password
+  delegate_to: localhost
+  vars:
+    ansible_connection: local
+  bigip_user:
+      server: "{{ ansible_ssh_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "admin"
+      password: "admin"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "admin"
+      password_credential: "{{ bigip_password }}"
+  register: result
+  ignore_errors: True
+
+
+# # Create Admin User/Password for REST
+# - name: Create Rest Admin User
+#   delegate_to: localhost
+#   vars:
+#       ansible_connection: local
+#   bigip_user:
+#       server: "{{ ansible_ssh_host }}"
+#       server_port: "{{ bigip_port }}"
+#       user: "admin"
+#       password: "{{ bigip_password }}"
+#       validate_certs: "{{ validate_certs }}"
+#       username_credential: "{{ bigip_user }}"
+#       password_credential: "{{ bigip_password }}"
+#       #artition_access: "all:admin"
+#       #shell: "tmsh"
+#       update_password: "on_create"
+#   register: result

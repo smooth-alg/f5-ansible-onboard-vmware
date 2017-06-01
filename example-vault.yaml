@@ -1,0 +1,51 @@
+---
+
+# Indirection taken from:
+#http://docs.ansible.com/ansible/playbooks_best_practices.html#best-practices-for-variables-and-vaults
+
+# Some Globals
+vault_install_path: "/home/vagrant/git/f5-onboard-vmware"
+
+# NOTE:
+# Pre v11.6, CLI uses root
+# v11.6 and later, AWS AMIs use admin
+
+# Warning: when configuring passwords via bigip_base
+# which uses tmsh commands from within bash
+# and need to avoid Bash Special Characters
+# you can't have a "#" in the password as tmsh will think it's a comment
+vault_ansible_ssh_user: "root"
+vault_ansible_ssh_pass: "default"
+
+vault_bigip_user: "admin"
+vault_bigip_password: "admin"
+
+vault_bigip_rest_user: "admin"
+vault_bigip_rest_password: "admin"
+
+
+# Vsphere Creds:
+vault_vsphere_user: "vsphere-user"
+vault_vsphere_password: "vsphere-user"
+vault_vsphere_datacenter: "DC - Seattle"
+vault_vsphere_cluster: "Shared"
+vault_vsphere_esxi_host: "10.1.1.1"
+vault_vsphere_folder: "MyFolder"
+vault_vsphere_datastore: "MyDatastore"
+vault_vsphere_app_iso_path: "MyDatastore/Ubuntu/ubuntu-14.04.1-server-amd64.iso"
+vault_vsphere_app_template_name: "www-template"
+
+vault_vsphere_bigip_template_name: "bigip-template"
+vault_vsphere_mgmt_network: "VLAN Mgmt"
+vault_vsphere_private_network: "VLAN Private"
+vault_vsphere_public_network: "VLAN Public"
+vault_vsphere_ha_network: "VLAN HA"
+
+# ISO paths for bigip_upgrade:
+vault_bigip_iso_dir: "/home/iso/"
+
+
+# MISC
+analytics_addr: "analytics.demo.example.com"
+vault_analytics_key: "XXXXX-XXXXX-XXXXXX-XXXXX-XXXXXXX" 
+

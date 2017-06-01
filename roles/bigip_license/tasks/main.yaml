@@ -1,0 +1,14 @@
+
+---
+
+- name: License the bigip using Ansible Module
+  delegate_to: localhost
+  bigip_license:
+     key="{{ reg_key }}"
+
+
+- name: Save the running BIG-IP configuration to disk
+  delegate_to: localhost
+  bigip_config:
+    save: True
+  register: result

@@ -1,0 +1,101 @@
+# Onboard cluster of BIG-IPs in ESX ( Requirement is MGMT IP available )
+
+############## BEGIN COLLECTING/SETTING VARIABLES ######
+
+- hosts: bigips
+  connection: local
+  gather_facts: False
+  environment:
+      F5_SERVER: "{{ ansible_ssh_host }}"
+      F5_USER: "{{ bigip_user }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+  tasks:
+
+    - name: create cache directory
+      file: path=../cache/{{env_tag}} state=directory
+
+    #- name: debug hosts before set fact
+    #  debug: var=hostvars[inventory_hostname]
+
+    - name: 
+      set_fact:
+        DeviceName={{ hostvars[inventory_hostname].hostname }}
+        ManagementInterfacePrivateIp={{ hostvars[inventory_hostname].bigip }}
+        ManagementInterfacePublicIp={{ hostvars[inventory_hostname].bigip }}
+        ExternalInterfacePublicIp="Not Used"
+
+
+    # Had to filter a bit more for varables below as there may be multiple Self-IPs that could match
+    - name: set ExternalInterfacePrivateIp
+      set_fact: 
+        ExternalInterfacePrivateIp={{ item.address }}
+      with_items: "{{hostvars[inventory_hostname].self_ips}}"
+      when: item.tag is defined and item.tag == "ExternalInterfacePrivateIp"
+
+    - name: set InternalInterfacePrivateIp
+      set_fact: 
+        InternalInterfacePrivateIp={{ item.address }}
+        InternalNetwork={{ item.address | ipsubnet(item.cidr) }}
+      with_items: "{{hostvars[inventory_hostname].self_ips}}"
+      when: item.tag is defined and item.tag == "InternalInterfacePrivateIp"
+
+    # - name: debug hosts after set fact
+    #   debug: var=hostvars[inventory_hostname]
+
+############## END COLLECTING/SETTING VARIABLES ######
+
+
+
+############## BEGIN CLUSTER THE DEVICES #############
+
+- hosts: bigip-clusters
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: create a dynamic group of seed devices using first member of each group
+      add_host:
+          name: "{{ item.value.0 }}"
+          group: bigip-cluster-seeds
+          cluster_name: "{{ item.key }}"
+          members: "{{ item.value }}"
+      with_dict: "{{ groups }}"
+      when: item.key in groups['bigip-clusters']
+
+    - name: debug groups
+      debug: var=groups
+
+- hosts: bigip-cluster-seeds
+  gather_facts: no
+  connection: local
+  tasks:
+
+      #- name: debug hosts
+      #  debug: var=hostvars[inventory_hostname]
+
+      # Difficult to selectively grab/loop through variables and construct string together
+      # in play framework itself. Easiest way is through a template.
+
+      - name: Store peers information
+        template: src=../roles/bigip_cluster/templates/cluster_peer_info.cfg.j2 dest=../cache/{{ env_tag }}/{{inventory_hostname}}_peer_info.yml
+        delegate_to: localhost
+
+# # Add peer variables to host from template output above
+- hosts: bigip-cluster-seeds
+  connection: local
+  gather_facts: False
+  environment:
+      F5_SERVER: "{{ ansible_ssh_host }}"
+      F5_USER: "{{ bigip_user }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+  vars_files:
+    - [ "../cache/{{ env_tag }}/{{inventory_hostname}}_peer_info.yml" ]
+  roles:
+     # This role configures the device object on each bigip and clusters them
+     - bigip_cluster
+
+######## END CLUSTER DEVICES ############
+

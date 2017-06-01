@@ -1,0 +1,26 @@
+
+---
+
+
+vs_name: "www_demo_f5example_com_vs"
+vs_description: "www.demo.f5example.com virtual"
+vip_address: 10.1.1.1
+vs_port1: 443
+vs_port2: 8080
+vs_profiles1:
+    - "http"
+    - "www_demo_f5example_com_clientssl"
+vs_profiles_fasthttp:
+    - "fastL4"
+vs_snat1: "Automap"
+pool_name: "www_demo_f5example_com_pool"
+enabled_vlans: "net1"
+snat_pool_name: "my-snat-pool"
+members_list:
+    - 10.3.0.201
+    - 10.3.0.202
+    - 10.3.0.203
+
+# Settings related to issue-53
+i53_default_persistence_profile: "cookie"
+i53_fallback_persistence_profile: "dest_addr"

@@ -1,0 +1,90 @@
+---
+# ----------------------------------------------------------------------
+# Configure basic network services that are the same across all devices.
+# ----------------------------------------------------------------------
+
+# Example of setting database variables
+#  Here we use a loop to retry until this first attempt to 
+#  provision using REST completes. This is our first REST call
+#  so we want to be sure the device is ready.
+
+- name: Configuring hostname
+  delegate_to: localhost
+  bigip_hostname:
+      hostname: "{{ hostname }}"
+
+- name: Configure Misc DB Keys
+  delegate_to: localhost
+  bigip_sys_db:
+      key: "{{item.key}}"
+      value: "{{item.value}}"
+  with_dict: "{{ db_keys }}"
+
+
+- name: Set NTP servers
+  delegate_to: localhost
+  bigip_device_ntp:
+      ntp_servers: "{{ ntp_servers}}"
+
+
+- name: Set Timezone
+  delegate_to: localhost
+  bigip_device_ntp:
+      timezone: "{{ timezone }}"
+
+
+- name: Configuring DNS servers
+  delegate_to: localhost
+  bigip_device_dns:
+      name_servers: "{{ dns_servers }}"
+      search: "{{ dns_search }}"
+      state: present
+
+#Uncomment Syslog config if really needed
+#Set logging pool, logging profiles for splunk, etc.
+- name: Configuring syslog
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{"include":"destination loghost { udp( 10.0.3.32 port (514));};"}'
+    collection_path='mgmt/tm/sys/syslog'
+
+# Some Providers can provide this functionality with their ACLs, although 
+# peforming this lockdown within TMOS creates allows better portability across cloud providers
+- name: Configuring HTTP mgmt access
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}    
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{"allow":["ALL"]}'
+    collection_path='mgmt/tm/sys/httpd'
+
+- name: Configuring SSH mgmt access
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{"allow":["ALL"]}'
+    collection_path='mgmt/tm/sys/sshd'
+
+- name: Configuring SNMP access
+  delegate_to: localhost
+  bigip_rest_wrapper:
+    state=present
+    host={{ ansible_ssh_host }}
+    port={{ bigip_port }}
+    user={{ bigip_user }}
+    password={{ bigip_password }}
+    payload='{"allowedAddresses":[ "ALL" ]}'
+    collection_path='mgmt/tm/sys/snmp'
+

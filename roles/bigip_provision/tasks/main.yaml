@@ -1,0 +1,20 @@
+---
+
+# Provision Modules like GTM, AFM, ASM, PEM, etc.
+- name: Provision Modules
+  delegate_to: localhost
+  bigip_provision:
+      module: "{{ item.module }}"
+      level: "{{ item.level }}"
+  with_items: "{{ provision }}"
+  ignore_errors: True
+  loop_control:
+      pause: 60
+
+- name: This is disruptive so wait for module completion to avoid any race conditions
+  pause: seconds=120
+
+
+# Need to check here if Ready before proceeding
+# ...
+

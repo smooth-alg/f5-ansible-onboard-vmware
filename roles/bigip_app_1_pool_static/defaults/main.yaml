@@ -1,0 +1,14 @@
+# ---
+pool_name: "www_demo_f5example_com_pool"
+pool_port: "80"
+pool_port_ssl: "443"
+lb_method: "ratio_member"
+slow_ramp_time: "120"
+monitors: [ "/Common/http" ]
+pool_members: 
+    - host: "10.3.0.201"
+      port: "80"
+    - host: "10.3.0.202"
+      port: "80"
+    - host: "10.3.0.203"
+      port: "80"

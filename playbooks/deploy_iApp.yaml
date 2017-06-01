@@ -1,0 +1,65 @@
+---
+
+# Dynamic Inventory only work for one cloud.
+# Gather Pool Members from build artifacts and deploy iApp
+# http://docs.catalystcloud.io/tutorials/ansible-create-x-servers-using-in-memory-inventory.html
+
+#######
+- hosts: bigips-vmware
+  # Connection = local as rest calls from the automation host
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Overide iApp default role variables for demo purposes
+      set_fact:
+          service_name: www_demo_f5example_com
+          # iApp Specific variables
+          iApp_service_name: "{{ service_name }}"
+          # TEMPLATE NAME:
+          # iApp_template_name: "f5.http"
+          # Use for bigip_iApp_advanced
+          iApp_template_name: "f5.http"
+          #iApp_template_name: "appsvcs_integration_v2.1_001"
+          # TEMPLATE TYPE
+          # iApp_template_type: "http_vip"
+          iApp_template_type: "https_vip_create_new_pool"
+          # iApp_template_type: "https_vip_w_waf"
+          # iApp_template_type: "https_w_waf"
+          # iApp_template_type: "https_vip_w_waf_fqdn_pool"
+          # iApp_template_type: "wildcard_https_vip"
+          # iApp_template_type: "wildcard_https_vip_w_waf_fqdn_pool"
+
+####
+
+- hosts: bigips
+# - hosts: bigip-21-aws-east-1
+  connection: local
+  gather_facts: False
+  environment:
+      F5_SERVER: "{{ ansible_ssh_host }}"
+      F5_USER: "{{ bigip_user }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+  # pre_tasks:
+  #   - name: Set iApp specific variables
+  #     set_fact:
+          # VIP grabbed dynamically from BIGIP vars
+          # vip_ip: "{{private_ip}}"
+          # Pool Info grabbed from deploy artifacts
+          # pool_1_members: "{{pool_members}}"
+          # pool_2_members: "{{pool_members}}"
+  roles:
+    # deploy standalone pools
+    # - bigip_app_1_pool_static
+    # - bigip_app_1_pool_dns
+    # - bigip_iApp_1_pools
+    # deploy App
+    # - bigip_app_1
+    - bigip_iApp_1
+  post_tasks:
+    - name: Save the running BIG-IP configuration to disk
+      delegate_to: localhost
+      bigip_config:
+        save: True
+      register: result

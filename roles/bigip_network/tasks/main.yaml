@@ -1,0 +1,47 @@
+---
+# ---------------------------------
+# Configure network, LTM, and ASM settings which are specific to each device.
+# ---------------------------------
+
+- name: Adding/updating vlans
+  delegate_to: localhost
+  bigip_vlan:
+      name: "{{item.key}}"
+      untagged_interfaces: "{{item.value.interfaces}}"
+  with_dict: "{{ vlans }}"
+  when: vlans is defined
+
+# Store Self-IPs in array because order is important. 
+# Need to create Unique Self IPs before floating.
+- name: Create Self IPs
+  delegate_to: localhost
+  bigip_selfip:
+      name: "{{item.name}}"
+      address: "{{item.address}}"
+      netmask: "{{item.netmask}}"
+      traffic_group: "{{item.traffic_group}}"
+      vlan: "{{item.vlan}}"
+  with_items: "{{ self_ips }}"
+  when: self_ips is defined
+
+- name: Create static route with gateway address
+  delegate_to: localhost
+  bigip_static_route:
+      name: "{{item.key}}"
+      destination: "{{item.value.network}}/{{ item.value.cidr }}"
+      gateway_address: "{{ item.value.gw }}" 
+  with_dict: "{{ routes }}"
+  when: routes is defined
+
+# NOTE it's important to save config before doing any disruptive event 
+# like Licensing & Provisioning...
+
+- name: Save the running BIG-IP configuration to disk
+  delegate_to: localhost
+  bigip_config:
+    server: "{{ ansible_ssh_host }}"
+    user: "{{ bigip_user }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    save: True
+  register: result

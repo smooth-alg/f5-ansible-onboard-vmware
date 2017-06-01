@@ -1,0 +1,15 @@
+---
+
+- name: Upload 12.0.0 base image
+  bigip_software:
+      state: "present"
+      software: "{{ iso_base }}"
+  register: result
+
+- name: Activate (upload, install, reboot) base image
+  bigip_software:
+      state: "activated"
+      software: "{{ iso_base }}"
+      hotfix: "{{ iso_hostfix }}"
+      volume: "{{ volume_old }}"
+  register: result

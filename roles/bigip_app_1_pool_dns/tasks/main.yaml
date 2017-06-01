@@ -1,0 +1,30 @@
+---
+- name: Create a pool
+  delegate_to: localhost
+  bigip_pool:
+      name: "{{ pool_name }}"
+      lb_method: "{{ lb_method }}"
+      slow_ramp_time: "{{ slow_ramp_time }}"
+      monitors: "{{ monitors }}"
+
+- name: Create fqdn node
+  delegate_to: localhost
+  bigip_node2:
+      state: "present"
+      description: "{{ node_description }}"
+      host: "{{ node_host_dns }}"
+      # monitor_type: "{{ monitor_type }}"
+      availability_requirement: "{{ availability_requirement }}"
+      monitors: "{{ node_monitors }}"
+      name: "{{ node_name }}"
+      quorum: "{{ node_quorum }}"
+      partition: "{{ bigip_partition }}"
+  register: result
+
+- name: Add members to pool
+  delegate_to: localhost
+  bigip_pool_member:
+      pool: "{{ pool_name }}"
+      host: "{{ item.host }}"
+      port: "{{ item.port }}"
+  with_items: "{{ pool_members }}"

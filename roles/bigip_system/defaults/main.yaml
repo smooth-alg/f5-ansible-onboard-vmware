@@ -1,0 +1,23 @@
+---
+
+db_keys:
+    setup.run: "false"
+
+# mcpd:
+#    audit: "enable"
+#    loglevel: "notice"
+
+##### NTP VARIABLES #####
+ntp_servers:
+    - "0.pool.ntp.org"
+    - "1.pool.ntp.org"
+timezone: "America/Los_Angeles"
+
+
+##### DNS VARIABLES #####
+dns_servers:
+    - "8.8.8.8"
+    - "8.8.4.4"
+dns_search:
+    - example.com
+    - lab.local
