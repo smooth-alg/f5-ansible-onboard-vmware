@@ -58,7 +58,7 @@ pyvmomi==6.5
 q==2.6
 requests-oauthlib==0.8.0
 requestsexceptions==1.2.0
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.1.10
 scp==0.10.2
 SecretStorage==2.3.1
