@@ -4,7 +4,7 @@ f5-sdk==2.2.2
 suds==0.4
 urllib3==1.16
 xmltodict==0.10.2
-PyYAML==3.12
+PyYAML==5.4
 netaddr==0.7.18
 ipaddress==1.0.18
 httplib2==0.9.2
