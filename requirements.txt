@@ -12,7 +12,7 @@ requests==2.12.5
 Jinja2==2.9.5
 
 #Misc
-ansible==2.4.0
+ansible==2.9.20
 adal==0.4.5
 appdirs==1.4.3
 applicationinsights==0.10.0
